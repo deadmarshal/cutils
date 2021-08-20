@@ -8,9 +8,18 @@
 #include<ctype.h>
 #include<stdio.h>
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // By value:
 const char* trim_left_copy(const char* str);
 const char* trim_right_copy(const char* str);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // __STRUTILS_H
 
@@ -64,5 +73,5 @@ const char* trim_right_copy(const char* str)
   return (const char*)s;
 }
 
-#endif
+#endif // STRUTILS_IMPLEMENTATION
 
