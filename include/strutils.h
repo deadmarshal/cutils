@@ -11,12 +11,19 @@
 extern "C" {
 #endif
 
-void trim(char* str);
-void trim_left(char* str);
-void trim_right(char* str);
-const char* trim_copy(const char* str);
-const char* trim_left_copy(const char* str);
-const char* trim_right_copy(const char* str);
+typedef struct
+{
+  char *data;
+  size_t sz;
+}char_array;
+  
+void trim(char *str);
+void trim_left(char *str);
+void trim_right(char *str);
+const char *trim_copy(const char *str);
+const char *trim_left_copy(const char *str);
+const char *trim_right_copy(const char *str);
+char_array *to_char_array(char *str);
 
 #ifdef __cplusplus
 }
@@ -27,20 +34,20 @@ const char* trim_right_copy(const char* str);
 ///////////////IMPLEMENTATION PART///////////////
 #ifdef STRUTILS_IMPLEMENTATION
 
-void trim(char* str)
+void trim(char *str)
 {
   trim_left(str);
   trim_right(str);
 }
 
-void trim_left(char* str)
+void trim_left(char *str)
 {
   size_t idx = {0};
   do{idx++;}while(isspace(str[idx]));
-  char* last = &str[strlen(str)];
+  char *last = &str[strlen(str)];
   
   ptrdiff_t sz = last - str;
-  char* s = realloc(str, sz+1);
+  char *s = realloc(str, sz+1);
   assert(s && "Memory allocation failed.\n");
 
   size_t i = {0};
@@ -53,13 +60,13 @@ void trim_left(char* str)
   str = s;
 }
 
-void trim_right(char* str)
+void trim_right(char *str)
 {
-  char* last = str + strlen(str) - 1;
+  char *last = str + strlen(str) - 1;
   do{last--;}while(isspace(*last));
   ptrdiff_t sz = last - str + 1;
 
-  char* s = realloc(str, sz+1);
+  char *s = realloc(str, sz+1);
   assert(s && "Memory allocation failed.\n");
   
   size_t i = {0};
@@ -72,9 +79,9 @@ void trim_right(char* str)
   str = s;
 }
 
-const char* trim_copy(const char* str)
+const char *trim_copy(const char *str)
 {
-  char* s = strdup(str);
+  char *s = strdup(str);
   assert(s && "Memory allocation failed.\n");
   trim_left(s);
   trim_right(s);
@@ -82,17 +89,17 @@ const char* trim_copy(const char* str)
   return (const char*)s;
 }
 
-const char* trim_left_copy(const char* str)
+const char *trim_left_copy(const char *str)
 {
   // Number of spaces.
   size_t spaces = {0};
   do{spaces++;}while(isspace(str[spaces]));
 
   // Allocate a string.
-  char* s = malloc((strlen(str) - spaces + 1) * sizeof(char));
+  char *s = malloc((strlen(str) - spaces + 1) * sizeof(char));
   assert(s && "Memory allocation failed.\n");
   // Ptr to the first non-space character to copy to s.
-  const char* ptr = &str[spaces];
+  const char *ptr = &str[spaces];
 
   // Filling s with characters from str.
   size_t i = {0};
@@ -106,7 +113,7 @@ const char* trim_left_copy(const char* str)
   return (const char*)s;
 }
 
-const char* trim_right_copy(const char* str)
+const char *trim_right_copy(const char *str)
 {
   // Ptr to last character.
   const char *last = str + strlen(str)-1;
@@ -115,7 +122,7 @@ const char* trim_right_copy(const char* str)
   // Size of actual string.
   size_t sz = (last - str) + 1;
   
-  char* s = malloc((sz+1) * sizeof(char));
+  char *s = malloc((sz+1) * sizeof(char));
   assert(s && "Memory allocation failed.\n");
   
   size_t i = {0};
@@ -127,6 +134,30 @@ const char* trim_right_copy(const char* str)
   s[i] = '\0';
   
   return (const char*)s;
+}
+
+char_array *to_char_array(char *str)
+{
+  // Get size of str
+  size_t sz = strlen(str);
+  // Allocate memory for char_array struct
+  char_array *arr = malloc(sizeof(char_array));
+  assert(arr && "Memory allocation failed.\n");
+  // Allocate memory for data in char_array struct
+  arr->data = malloc(sz * sizeof(char));
+  assert(arr->data && "Memory allocation failed.\n");
+  // Set sz in char_array struct
+  arr->sz = sz;
+  
+  // Copy the characters
+  size_t i = {0};
+  while(str[i] != '\0')
+    {
+      *(arr->data + i) = *(str + i);
+      i++;
+    }
+  
+  return arr;
 }
 
 #endif
